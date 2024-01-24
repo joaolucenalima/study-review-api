@@ -8,12 +8,14 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "prisma": "^5.8.1"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@prisma/client": "^5.8.1",
     "elysia": "^0.8.9"
   }
 }
