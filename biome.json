@@ -12,13 +12,14 @@
 	"javascript": {
 		"formatter": {
 			"arrowParentheses": "asNeeded",
+			"jsxQuoteStyle": "single",
 			"quoteStyle": "double",
 			"semicolons": "always",
 			"trailingComma": "all",
 			"quoteProperties": "asNeeded",
 			"bracketSpacing": true,
 			"bracketSameLine": false,
-			"lineWidth": 95
+			"lineWidth": 80
 		}
 	}
 }
