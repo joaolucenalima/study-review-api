@@ -24,8 +24,7 @@ export async function makeLoginWithGoogle({
 	setCookie,
 	set,
 }: GoogleLoginProps) {
-	const tokenURL = "https://oauth2.googleapis.com/token?";
-	const valueParams = new URLSearchParams({
+	const paramsValues = new URLSearchParams({
 		code: query.code,
 		client_id: env.CLIENT_ID,
 		client_secret: env.CLIENT_SECRET,
@@ -34,7 +33,7 @@ export async function makeLoginWithGoogle({
 	});
 
 	const { access_token, expires_in, refresh_token } = await fetch(
-		tokenURL + valueParams,
+		`https://oauth2.googleapis.com/token?${paramsValues}`,
 		{
 			method: "POST",
 			headers: {
@@ -48,12 +47,14 @@ export async function makeLoginWithGoogle({
 	await findOrCreateUser(userData);
 
 	setCookie("access_token", access_token, {
-		sameSite: "lax",
 		maxAge: expires_in,
+		httpOnly: true,
+		path: '/'
 	});
 
 	setCookie("refresh_token", refresh_token, {
 		maxAge: 60 * 60 * 24 * 60, // 2 months
+		path: '/'
 	});
 
 	set.redirect = "/";

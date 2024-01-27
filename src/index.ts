@@ -9,7 +9,7 @@ console.log(
 
 const app = new Elysia();
 
-app.use(cookie).get("/login/callback", makeLoginWithGoogle, {
+app.use(cookie()).get("/login/callback", makeLoginWithGoogle, {
 	query: t.Object({
 		code: t.String(),
 	}),
