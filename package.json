@@ -1,5 +1,5 @@
 {
-  "name": "study-app",
+  "name": "study-review-api",
   "module": "index.ts",
   "type": "module",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
-    "@types/bun": "latest",
+    "@types/bun": "1.0.4",
     "prisma": "^5.8.1"
   },
   "peerDependencies": {

@@ -1,6 +1,6 @@
 import cookie from "@elysiajs/cookie";
 import { Elysia, t } from "elysia";
-import { makeLoginWithGoogle } from "./controllers/user";
+import { registerUser } from "./controllers/user";
 import { env } from "./env";
 
 console.log(
@@ -9,7 +9,7 @@ console.log(
 
 const app = new Elysia();
 
-app.use(cookie()).get("/login/callback", makeLoginWithGoogle, {
+app.use(cookie()).get("/login/callback", registerUser, {
 	query: t.Object({
 		code: t.String(),
 	}),

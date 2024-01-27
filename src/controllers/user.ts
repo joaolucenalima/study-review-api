@@ -1,7 +1,9 @@
 import type { CookieRequest } from "@elysiajs/cookie";
+import type { User } from "@prisma/client";
 import type { Context } from "elysia";
 import { env } from "../env";
-import { findOrCreateUser, getUserInfo } from "../services/user.service";
+import createSession from "../services/session.service";
+import { findOrCreateUser } from "../services/user.service";
 
 interface GoogleLoginProps {
 	query: {
@@ -19,7 +21,7 @@ interface GoogleTokensResult {
 	id_token: string;
 }
 
-export async function makeLoginWithGoogle({
+export async function registerUser({
 	query,
 	setCookie,
 	set,
@@ -32,7 +34,7 @@ export async function makeLoginWithGoogle({
 		grant_type: "authorization_code",
 	});
 
-	const { access_token, expires_in, refresh_token } = await fetch(
+	const { access_token } = await fetch(
 		`https://oauth2.googleapis.com/token?${paramsValues}`,
 		{
 			method: "POST",
@@ -42,19 +44,20 @@ export async function makeLoginWithGoogle({
 		},
 	).then(res => res.json() as Promise<GoogleTokensResult>);
 
-	const userData = await getUserInfo(access_token);
+	const userData = await fetch(
+		`https://www.googleapis.com/oauth2/v2/userinfo?access_token=${access_token}`,
+	).then(res => res.json() as Promise<User>);
 
-	await findOrCreateUser(userData);
+	const { name } = await findOrCreateUser(userData);
 
-	setCookie("access_token", access_token, {
-		maxAge: expires_in,
+	await createSession({ access_token, name });
+
+	setCookie("session_id", access_token, {
 		httpOnly: true,
-		path: '/'
-	});
-
-	setCookie("refresh_token", refresh_token, {
-		maxAge: 60 * 60 * 24 * 60, // 2 months
-		path: '/'
+		secure: true,
+		sameSite: true,
+		path: "/",
+		maxAge: 60 * 60 * 24 * 60, // 2 meses
 	});
 
 	set.redirect = "/";

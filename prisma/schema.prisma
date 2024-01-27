@@ -16,6 +16,11 @@ model User {
   tasks Task[]
 }
 
+model Sessions {
+  session_id   String @id
+  session_user String
+}
+
 model Task {
   id        String   @id @default(cuid())
   title     String
