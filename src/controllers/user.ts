@@ -2,6 +2,7 @@ import type { CookieRequest } from "@elysiajs/cookie";
 import type { User } from "@prisma/client";
 import type { Context } from "elysia";
 import { env } from "../env";
+import { prisma } from "../lib/prisma";
 import createSession from "../services/session.service";
 import { findOrCreateUser } from "../services/user.service";
 
@@ -48,9 +49,9 @@ export async function registerUser({
 		`https://www.googleapis.com/oauth2/v2/userinfo?access_token=${access_token}`,
 	).then(res => res.json() as Promise<User>);
 
-	const { name } = await findOrCreateUser(userData);
+	const { email } = await findOrCreateUser(userData);
 
-	await createSession({ access_token, name });
+	await createSession({ access_token, email });
 
 	setCookie("session_id", access_token, {
 		httpOnly: true,
@@ -61,4 +62,14 @@ export async function registerUser({
 	});
 
 	set.redirect = "/";
+}
+
+export async function profile(
+	ctx: Context & { getUserEmail: () => Promise<string> },
+) {
+	const email = await ctx.getUserEmail();
+
+	return await prisma.user.findUnique({
+		where: { email },
+	});
 }

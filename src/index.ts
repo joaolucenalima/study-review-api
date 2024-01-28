@@ -1,6 +1,7 @@
 import cookie from "@elysiajs/cookie";
 import { Elysia, t } from "elysia";
-import { registerUser } from "./controllers/user";
+import { authentication } from "./authentication";
+import { profile, registerUser } from "./controllers/user";
 import { env } from "./env";
 
 console.log(
@@ -14,6 +15,8 @@ app.use(cookie()).get("/login/callback", registerUser, {
 		code: t.String(),
 	}),
 });
+
+app.use(authentication).get("/me", profile);
 
 app.listen(1337, () => {
 	console.log("Elysia server is running on port 1337! 🧄");

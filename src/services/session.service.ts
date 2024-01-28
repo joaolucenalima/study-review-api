@@ -2,18 +2,18 @@ import { prisma } from "../lib/prisma";
 
 interface CreateSessionProps {
 	access_token: string;
-	name: string;
+	email: string;
 }
 
 export default async function createSession({
 	access_token,
-	name,
+	email,
 }: CreateSessionProps) {
 	try {
 		await prisma.sessions.create({
 			data: {
 				session_id: access_token,
-				session_user: name,
+				session_user: email,
 			},
 		});
 	} catch (err) {

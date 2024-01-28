@@ -21,5 +21,5 @@ bun lint
 Initialize docker container with:
 
 ```bash
-docker-compose up
+docker-compose up -d
 ```
