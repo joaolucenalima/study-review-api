@@ -7,7 +7,7 @@ export const authentication = new Elysia().derive(({ cookie, set }) => {
 			const session_id = cookie.session_id;
 
 			if (!session_id) {
-				// biome-ignore lint: elysia set return format
+				// biome-ignore lint: elysia 'set' default return format
 				return (set.redirect = "/"), (set.status = "Unauthorized");
 			}
 

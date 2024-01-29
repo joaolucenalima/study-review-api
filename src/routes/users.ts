@@ -9,8 +9,8 @@ import { UserServices } from "../services/user.service";
 
 export const UsersRoutes = new Elysia();
 
-const usersRepository = new PrismaUsersRepository();
-const usersServices = new UserServices(usersRepository);
+const userRepository = new PrismaUsersRepository();
+const userServices = new UserServices(userRepository);
 
 interface GoogleTokensResult {
 	access_token: string;
@@ -45,7 +45,7 @@ UsersRoutes.use(cookie()).get(
 			`https://www.googleapis.com/oauth2/v2/userinfo?access_token=${access_token}`,
 		).then(res => res.json() as Promise<User>);
 
-		const { email } = await usersServices.login(userData);
+		const { email } = await userServices.login(userData);
 
 		await createSession({ access_token, email });
 
@@ -70,7 +70,7 @@ UsersRoutes.use(authentication).get("/me", async ({ getUserEmail }) => {
 	const email = await getUserEmail();
 
 	if (email) {
-		const user = await usersServices.profile(email);
+		const user = await userServices.profile(email);
 		return user;
 	}
 });
