@@ -1,23 +1,20 @@
 import type { User } from "@prisma/client";
-import { prisma } from "../lib/prisma";
+import type { UsersRepository } from "../repositories/interfaces";
 
-export async function findOrCreateUser(userData: User) {
-	let user = await prisma.user.findUnique({
-		where: {
-			email: userData.email,
-			name: userData.name,
-		},
-	});
+export class UserServices {
+	constructor(private usersRepository: UsersRepository) {}
 
-	if (!user) {
-		user = await prisma.user.create({
-			data: {
-				email: userData.email,
-				name: userData.name,
-				picture: userData.picture,
-			},
-		});
+	async login(userData: User) {
+		let user = await this.usersRepository.findByEmail(userData.email);
+
+		if (!user) {
+			user = await this.usersRepository.create(userData);
+		}
+
+		return user;
 	}
 
-	return user;
+	async profile(email: string) {
+		return await this.usersRepository.findByEmail(email);
+	}
 }
