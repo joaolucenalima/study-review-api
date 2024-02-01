@@ -3,7 +3,7 @@ import { prisma } from "./lib/prisma";
 
 export const authentication = new Elysia().derive(({ cookie, set }) => {
 	return {
-		getUserEmail: async () => {
+		getLoggedUserId: async () => {
 			const session_id = cookie.session_id;
 
 			if (!session_id) {

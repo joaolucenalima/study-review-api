@@ -8,12 +8,12 @@ export const TasksRoutes = new Elysia();
 const taskRepository = new PrismaTasksRepository();
 const tasksServices = new TasksServices(taskRepository);
 
-TasksRoutes.use(authentication).get("/tasks", async ({ getUserEmail }) => {
-	const userEmail = (await getUserEmail()) as string;
+TasksRoutes.use(authentication).get("/tasks", async ({ getLoggedUserId }) => {
+	const user_id = (await getLoggedUserId()) as string;
 
-	return await tasksServices.findTasks(userEmail);
+	return await tasksServices.findTasks(user_id);
 });
 
-TasksRoutes.use(authentication).post("/tasks", async ({ getUserEmail }) => {
-	const userEmail = await getUserEmail();
+TasksRoutes.use(authentication).post("/tasks", async ({ getLoggedUserId }) => {
+	const user_id = await getLoggedUserId();
 });

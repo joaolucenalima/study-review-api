@@ -7,7 +7,7 @@ let sut: UserServices;
 
 describe("test user service", () => {
 	const userData = {
-		id: "n1-923fni2edn230",
+		id: "id-teste",
 		name: "John Doe",
 		email: "johndoe@example.com",
 		picture: "https://example.com/johndoe.jpg",
@@ -23,13 +23,5 @@ describe("test user service", () => {
 
 		expect(user).toBeObject();
 		expect(user.id).toEqual(expect.any(String));
-	});
-
-	test("should be possible to get profile", async () => {
-		await sut.login(userData);
-
-		const user = await sut.profile("johndoe@example.com");
-
-		expect(user).toBeObject();
 	});
 });

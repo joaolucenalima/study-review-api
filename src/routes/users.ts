@@ -45,9 +45,9 @@ UsersRoutes.use(cookie()).get(
 			`https://www.googleapis.com/oauth2/v2/userinfo?access_token=${access_token}`,
 		).then(res => res.json() as Promise<User>);
 
-		const { email } = await userServices.login(userData);
+		const { id } = await userServices.login(userData);
 
-		await createSession({ access_token, email });
+		await createSession({ access_token, id });
 
 		setCookie("session_id", access_token, {
 			httpOnly: true,
@@ -66,11 +66,11 @@ UsersRoutes.use(cookie()).get(
 	},
 );
 
-UsersRoutes.use(authentication).get("/me", async ({ getUserEmail }) => {
-	const email = await getUserEmail();
+UsersRoutes.use(authentication).get("/me", async ({ getLoggedUserId }) => {
+	const id = await getLoggedUserId();
 
-	if (email) {
-		const user = await userServices.profile(email);
+	if (id) {
+		const user = await userServices.profile(id);
 		return user;
 	}
 });

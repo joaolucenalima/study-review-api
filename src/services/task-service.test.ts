@@ -12,8 +12,9 @@ describe("test tasks services", () => {
 	});
 
 	test("should be possible to get all today tasks", async () => {
-		const tasks = await sut.findTasks("johndoe@example.com");
+		const tasks = await sut.findTasks("id-teste");
 
 		expect(tasks).toBeArray();
+		expect(tasks).toHaveLength(1);
 	});
 });

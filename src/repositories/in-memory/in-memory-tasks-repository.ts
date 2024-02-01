@@ -1,11 +1,11 @@
-import type { Prisma, Tasks, User } from "@prisma/client";
+import type { Prisma, Tasks } from "@prisma/client";
 import type { TasksRepository } from "../interfaces";
 
 export class InMemoryTasksRepository implements TasksRepository {
 	public taskList: Tasks[] = [
 		{
 			id: crypto.randomUUID(),
-			user_id: "n1-923fni2edn230",
+			user_id: "id-teste",
 			first_date: new Date().toISOString(),
 			title: "Task 1",
 			completed: false,
@@ -13,32 +13,9 @@ export class InMemoryTasksRepository implements TasksRepository {
 		},
 	];
 
-	public users: User[] = [
-		{
-			id: "n1-923fni2edn230",
-			name: "John Doe",
-			email: "johndoe@example.com",
-			picture: "https://example.com/johndoe.jpg",
-		},
-	];
-
-	async findTodayTasksAndRevisions(email: string) {
-		const user = this.users.find(user => user.email === email);
-
-		if (!user) {
-			return null;
-		}
-
-		this.taskList.map(task => {
-			if (
-				task.user_id === user.id &&
-				task.first_date === new Date().toISOString()
-			) {
-				this.taskList.push(task);
-			}
-		});
-
-		return this.taskList || null;
+	async findTodayTasksAndRevisions(user_id: string) {
+		const tasks = this.taskList.filter(task => task.user_id === user_id);
+		return tasks || null;
 	}
 
 	async create(data: Prisma.TasksCreateInput, user_id: string) {

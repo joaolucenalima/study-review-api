@@ -3,20 +3,10 @@ import { prisma } from "../../lib/prisma";
 import type { TasksRepository } from "../interfaces";
 
 export class PrismaTasksRepository implements TasksRepository {
-	async findTodayTasksAndRevisions(email: string) {
-		const user = await prisma.user.findUnique({
-			where: {
-				email,
-			},
-		});
-
-		if (!user) {
-			return null;
-		}
-
+	async findTodayTasksAndRevisions(user_id: string) {
 		const tasks = await prisma.tasks.findMany({
 			where: {
-				user_id: user.id,
+				user_id,
 				first_date: new Date().toISOString(),
 			},
 			include: {
