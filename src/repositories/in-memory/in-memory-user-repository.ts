@@ -11,7 +11,7 @@ export class InMemoryUsersRepository implements UsersRepository {
 
 	async create(userData: Prisma.UserCreateInput) {
 		const user = {
-			id: "n1-923fni2edn230",
+			id: crypto.randomUUID(),
 			name: userData.name,
 			email: userData.email,
 			picture: userData.picture,

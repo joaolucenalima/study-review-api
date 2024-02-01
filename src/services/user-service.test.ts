@@ -6,18 +6,19 @@ let usersRepository: InMemoryUsersRepository;
 let sut: UserServices;
 
 describe("test user service", () => {
+	const userData = {
+		id: "n1-923fni2edn230",
+		name: "John Doe",
+		email: "johndoe@example.com",
+		picture: "https://example.com/johndoe.jpg",
+	};
+
 	beforeEach(() => {
 		usersRepository = new InMemoryUsersRepository();
 		sut = new UserServices(usersRepository);
 	});
 
 	test("should be possible to login", async () => {
-		const userData = {
-			name: "joão",
-			email: "joao@gmail.com",
-			picture: "wnqodnqwofwqfkdqwdow",
-		};
-
 		const user = await sut.login(userData);
 
 		expect(user).toBeObject();
@@ -25,15 +26,9 @@ describe("test user service", () => {
 	});
 
 	test("should be possible to get profile", async () => {
-		const userData = {
-			name: "joão",
-			email: "joao@gmail.com",
-			picture: "wnqodnqwofwqfkdqwdow",
-		};
-
 		await sut.login(userData);
 
-		const user = await sut.profile("joao@gmail.com");
+		const user = await sut.profile("johndoe@example.com");
 
 		expect(user).toBeObject();
 	});

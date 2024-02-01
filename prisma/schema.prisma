@@ -8,12 +8,12 @@ datasource db {
 }
 
 model User {
-  id      String @id @default(cuid())
+  id      String @id @default(uuid())
   name    String
   email   String @unique
   picture String
 
-  tasks Task[]
+  tasks Tasks[]
 }
 
 model Sessions {
@@ -21,11 +21,23 @@ model Sessions {
   session_user String
 }
 
-model Task {
-  id        String   @id @default(cuid())
-  title     String
-  createdAt DateTime @default(now())
-  userId    String?
+model Tasks {
+  id                String  @id @default(cuid())
+  title             String
+  first_date        String
+  completed         Boolean
+  next_revision_day String
+  user_id           String?
 
-  User User? @relation(fields: [userId], references: [id])
+  User      User?       @relation(fields: [user_id], references: [id])
+  revisions Revisions[]
+}
+
+model Revisions {
+  id      String  @id @default(cuid())
+  day     String
+  revised Boolean
+  task_id String?
+
+  Task Tasks? @relation(fields: [task_id], references: [id])
 }
