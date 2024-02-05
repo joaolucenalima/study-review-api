@@ -25,7 +25,7 @@ model Tasks {
   id                String  @id @default(cuid())
   title             String
   first_date        String
-  completed         Boolean
+  completed         Boolean @default(false)
   next_revision_day String
   user_id           String?
 
