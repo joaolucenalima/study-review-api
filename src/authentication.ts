@@ -4,11 +4,12 @@ import { prisma } from "./lib/prisma";
 export const authentication = new Elysia().derive(({ cookie, set }) => {
 	return {
 		getLoggedUserId: async () => {
+			console.log("cookie", cookie);
 			const session_id = cookie.session_id;
 
 			if (!session_id) {
-				// biome-ignore lint: elysia 'set' default return format
-				return (set.redirect = "/"), (set.status = "Unauthorized");
+				set.status = "Unauthorized";
+				set.redirect = "/";
 			}
 
 			const session = await prisma.sessions.findUnique({

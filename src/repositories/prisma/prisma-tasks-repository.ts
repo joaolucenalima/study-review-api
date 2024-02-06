@@ -18,7 +18,7 @@ export class PrismaTasksRepository implements TasksRepository {
 	}
 
 	async create(data: Prisma.TasksCreateInput, user_id: string) {
-		await prisma.tasks.create({
+		return await prisma.tasks.create({
 			data: {
 				...data,
 				User: {

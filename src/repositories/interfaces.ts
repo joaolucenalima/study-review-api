@@ -8,5 +8,5 @@ export interface UsersRepository {
 
 export interface TasksRepository {
 	findTodayTasksAndRevisions(user_id: string): Promise<Tasks[] | null>;
-	create(data: Prisma.TasksCreateInput, user_id: string): Promise<void>;
+	create(data: Prisma.TasksCreateInput, user_id: string): Promise<Tasks>;
 }

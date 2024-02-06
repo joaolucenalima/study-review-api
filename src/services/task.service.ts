@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import type { TasksRepository } from "../repositories/interfaces";
 
 export class TasksServices {
@@ -8,5 +9,9 @@ export class TasksServices {
 			await this.tasksRepository.findTodayTasksAndRevisions(user_id);
 
 		return tasks;
+	}
+
+	async create(user_id: string, body: Prisma.TasksCreateInput) {
+		return await this.tasksRepository.create(body, user_id);
 	}
 }
