@@ -9,15 +9,14 @@
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
     "@types/bun": "1.0.4",
-    "prisma": "^5.8.1"
+    "prisma": "5.8.1"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "5.0.0"
   },
   "dependencies": {
-    "@elysiajs/cookie": "^0.8.0",
-    "@prisma/client": "^5.8.1",
-    "elysia": "^0.8.9",
-    "zod": "^3.22.4"
+    "@prisma/client": "5.8.1",
+    "elysia": "0.8.9",
+    "zod": "3.22.4"
   }
 }

@@ -1,4 +1,3 @@
-import cookie from "@elysiajs/cookie";
 import type { User } from "@prisma/client";
 import Elysia, { t } from "elysia";
 import { authentication } from "../authentication";
@@ -20,9 +19,9 @@ interface GoogleTokensResult {
 	id_token: string;
 }
 
-UsersRoutes.use(cookie()).get(
+UsersRoutes.get(
 	"/login/callback",
-	async ({ query, set, setCookie }) => {
+	async ({ query, set, cookie: { session_id } }) => {
 		const paramsValues = new URLSearchParams({
 			code: query.code,
 			client_id: env.CLIENT_ID,
@@ -49,7 +48,8 @@ UsersRoutes.use(cookie()).get(
 
 		await createSession({ access_token, id });
 
-		setCookie("session_id", access_token, {
+		session_id.set({
+			value: access_token,
 			httpOnly: true,
 			secure: true,
 			sameSite: true,
@@ -63,6 +63,9 @@ UsersRoutes.use(cookie()).get(
 		query: t.Object({
 			code: t.String(),
 		}),
+		cookie: t.Object({
+			session_id: t.String(),
+		})
 	},
 );
 
