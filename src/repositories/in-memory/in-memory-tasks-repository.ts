@@ -22,7 +22,10 @@ export class InMemoryTasksRepository implements TasksRepository {
 		this.taskList.push({
 			id: crypto.randomUUID(),
 			user_id,
+			completed: data.completed || false,
 			...data,
 		});
+
+		return this.taskList[this.taskList.length - 1];
 	}
 }

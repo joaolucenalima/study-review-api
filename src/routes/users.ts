@@ -65,7 +65,7 @@ UsersRoutes.get(
 		}),
 		cookie: t.Object({
 			session_id: t.String(),
-		})
+		}),
 	},
 );
 

@@ -23,7 +23,16 @@ async function makeRequest({ body, url, method }: MakeRequestProps) {
 }
 
 describe("tasks routes test (E2E)", () => {
-	beforeAll(() => {});
+	beforeAll(() => {
+		app.config.cookie = {
+			httpOnly: true,
+			secure: true,
+			sameSite: true,
+			path: "/",
+			maxAge: 60 * 60 * 24 * 60,
+			sign: "session_id",
+		}
+	});
 
 	test("get tasks from user", async () => {
 		const { data, status } = await makeRequest({
