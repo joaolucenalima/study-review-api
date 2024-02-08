@@ -51,10 +51,8 @@ UsersRoutes.get(
 		session_id.set({
 			value: access_token,
 			httpOnly: true,
-			secure: true,
-			sameSite: true,
 			path: "/",
-			maxAge: 60 * 60 * 24 * 60, // 2 meses
+			maxAge: 60 * 60 * 24 * 60, // 2 months
 		});
 
 		set.redirect = "/";
@@ -62,9 +60,6 @@ UsersRoutes.get(
 	{
 		query: t.Object({
 			code: t.String(),
-		}),
-		cookie: t.Object({
-			session_id: t.String(),
 		}),
 	},
 );
