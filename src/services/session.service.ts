@@ -9,19 +9,18 @@ export default async function createSession({
 	access_token,
 	id,
 }: CreateSessionProps) {
-
 	const sessions = await prisma.sessions.findMany({
 		where: {
 			session_user: id,
-		}
-	})
+		},
+	});
 
 	if (sessions) {
 		await prisma.sessions.deleteMany({
 			where: {
 				session_user: id,
-			}
-		})
+			},
+		});
 	}
 
 	await prisma.sessions.create({

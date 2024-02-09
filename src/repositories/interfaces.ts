@@ -7,6 +7,8 @@ export interface UsersRepository {
 }
 
 export interface TasksRepository {
+	find(id: string): Promise<Tasks | null>;
 	findTodayTasksAndRevisions(user_id: string): Promise<Tasks[] | null>;
-	create(data: Prisma.TasksCreateInput, user_id: string): Promise<Tasks>;
+	create(user_id: string, data: Prisma.TasksCreateInput): Promise<void>;
+	toggleComplete(id: string, completed: boolean): Promise<void>;
 }

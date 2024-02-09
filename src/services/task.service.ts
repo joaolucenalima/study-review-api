@@ -8,10 +8,20 @@ export class TasksServices {
 		const tasks =
 			await this.tasksRepository.findTodayTasksAndRevisions(user_id);
 
-		return tasks;
+		return { tasks };
 	}
 
 	async create(user_id: string, body: Prisma.TasksCreateInput) {
-		return await this.tasksRepository.create(body, user_id);
+		await this.tasksRepository.create(user_id, body);
+	}
+
+	async toggleCompleted(id: string) {
+		const task = await this.tasksRepository.find(id);
+
+		if (!task) {
+			return { error: "Task not found" };
+		}
+
+		await this.tasksRepository.toggleComplete(task.id, task.completed);
 	}
 }

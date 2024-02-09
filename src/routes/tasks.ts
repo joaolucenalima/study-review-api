@@ -19,11 +19,14 @@ TasksRoutes.use(authentication).post(
 	async ({ getLoggedUserId, body, set }) => {
 		const user_id = (await getLoggedUserId()) as string;
 
-		const task = await tasksServices.create(user_id, body);
+		try {
+			await tasksServices.create(user_id, body);
 
-		if (task) {
 			set.status = 201;
 			return { message: "Task created successfully" };
+		} catch (error) {
+			set.status = 400;
+			return { error };
 		}
 	},
 	{
@@ -31,6 +34,28 @@ TasksRoutes.use(authentication).post(
 			title: t.String(),
 			first_date: t.String(),
 			next_revision_day: t.String(),
+		}),
+	},
+);
+
+TasksRoutes.use(authentication).put(
+	"/tasks/:id",
+	async ({ getLoggedUserId, params, set }) => {
+		await getLoggedUserId();
+
+		try {
+			await tasksServices.toggleCompleted(params.id);
+
+			set.status = 200;
+			return { message: "Task updated successfully" };
+		} catch (error) {
+			set.status = 500;
+			return { error };
+		}
+	},
+	{
+		params: t.Object({
+			id: t.String(),
 		}),
 	},
 );

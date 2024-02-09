@@ -1,4 +1,5 @@
 import type { Prisma, Tasks } from "@prisma/client";
+import { format } from "date-fns";
 import type { TasksRepository } from "../interfaces";
 
 export class InMemoryTasksRepository implements TasksRepository {
@@ -6,10 +7,10 @@ export class InMemoryTasksRepository implements TasksRepository {
 		{
 			id: crypto.randomUUID(),
 			user_id: "id-teste",
-			first_date: new Date().toISOString(),
+			first_date: format(new Date(), "dd-MM-yyyy"),
 			title: "Task 1",
 			completed: false,
-			next_revision_day: new Date().toISOString(),
+			next_revision_day: format(new Date(), "dd-MM-yyyy"),
 		},
 	];
 
@@ -18,14 +19,12 @@ export class InMemoryTasksRepository implements TasksRepository {
 		return tasks || null;
 	}
 
-	async create(data: Prisma.TasksCreateInput, user_id: string) {
+	async create(user_id: string, data: Prisma.TasksCreateInput) {
 		this.taskList.push({
 			id: crypto.randomUUID(),
 			user_id,
 			completed: data.completed || false,
 			...data,
 		});
-
-		return this.taskList[this.taskList.length - 1];
 	}
 }
