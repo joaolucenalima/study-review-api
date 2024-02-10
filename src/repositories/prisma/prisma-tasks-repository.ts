@@ -1,5 +1,5 @@
 import type { Prisma } from "@prisma/client";
-import { format, startOfYesterday } from "date-fns";
+import { format } from "date-fns";
 import { prisma } from "../../lib/prisma";
 import type { TasksRepository } from "../interfaces";
 
@@ -18,18 +18,16 @@ export class PrismaTasksRepository implements TasksRepository {
 		const tasks = await prisma.tasks.findMany({
 			where: {
 				user_id,
-				first_date: format(new Date(), "dd-MM-yyyy"),
-			},
-			include: {
-				revisions: {
-					where: {
-						day: format(new Date(), "dd-MM-yyyy"),
-						AND: {
-							day: format(startOfYesterday(), "dd-MM-yyyy"),
-							revised: false,
-						},
+				OR: [
+					{
+						first_date: format(new Date(), "dd-MM-yyyy"),
+						completed: false,
 					},
-				},
+					{
+						next_revision_day: format(new Date(), "dd-MM-yyyy"),
+						completed: true,
+					},
+				],
 			},
 		});
 
@@ -56,6 +54,41 @@ export class PrismaTasksRepository implements TasksRepository {
 			},
 			data: {
 				completed: !completed,
+			},
+		});
+	}
+
+	async deferTasks(user_id: string) {
+		const tomorrow = new Date();
+		tomorrow.setTime(tomorrow.getTime() + 1000 * 60 * 60 * 24);
+
+		await prisma.tasks.updateMany({
+			where: {
+				user_id,
+				first_date: format(new Date(), "dd-MM-yyyy"),
+			},
+			data: {
+				first_date: format(tomorrow, "dd-MM-yyyy"),
+				next_revision_day: format(
+					new Date(tomorrow.setTime(tomorrow.getTime() + 1000 * 60 * 60 * 24)),
+					"dd-MM-yyyy",
+				),
+			},
+		});
+	}
+
+	async deferRevisions(user_id: string) {
+		const tomorrow = new Date();
+		tomorrow.setTime(tomorrow.getTime() + 1000 * 60 * 60 * 24);
+
+		await prisma.tasks.updateMany({
+			where: {
+				user_id,
+				next_revision_day: format(new Date(), "dd-MM-yyyy"),
+				completed: true,
+			},
+			data: {
+				next_revision_day: format(tomorrow, "dd-MM-yyyy"),
 			},
 		});
 	}

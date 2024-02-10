@@ -11,4 +11,6 @@ export interface TasksRepository {
 	findTodayTasksAndRevisions(user_id: string): Promise<Tasks[] | null>;
 	create(user_id: string, data: Prisma.TasksCreateInput): Promise<void>;
 	toggleComplete(id: string, completed: boolean): Promise<void>;
+	deferTasks(user_id: string): Promise<void>;
+	deferRevisions(user_id: string): Promise<void>;
 }

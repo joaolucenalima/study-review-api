@@ -47,7 +47,7 @@ TasksRoutes.use(authentication).put(
 			await tasksServices.toggleCompleted(params.id);
 
 			set.status = 200;
-			return { message: "Task updated successfully" };
+			return { message: "Estudo completo!" };
 		} catch (error) {
 			set.status = 500;
 			return { error };
@@ -57,5 +57,22 @@ TasksRoutes.use(authentication).put(
 		params: t.Object({
 			id: t.String(),
 		}),
+	},
+);
+
+TasksRoutes.use(authentication).put(
+	"/tasks/defer",
+	async ({ getLoggedUserId, set }) => {
+		const user_id = (await getLoggedUserId()) as string;
+
+		try {
+			await tasksServices.deferDay(user_id);
+
+			set.status = "OK";
+			return { message: "Dia adiado" };
+		} catch (error) {
+			set.status = 500;
+			return { error };
+		}
 	},
 );

@@ -8,7 +8,7 @@ export class TasksServices {
 		const tasks =
 			await this.tasksRepository.findTodayTasksAndRevisions(user_id);
 
-		return { tasks };
+		return tasks;
 	}
 
 	async create(user_id: string, body: Prisma.TasksCreateInput) {
@@ -23,5 +23,10 @@ export class TasksServices {
 		}
 
 		await this.tasksRepository.toggleComplete(task.id, task.completed);
+	}
+
+	async deferDay(user_id: string) {
+		await this.tasksRepository.deferRevisions(user_id);
+		await this.tasksRepository.deferTasks(user_id);
 	}
 }
