@@ -1,25 +1,21 @@
-# study-app
+# Study Review API
 
-To install dependencies:
+### An api for a study review app made with Bun, ElysiaJS and PostgresSQL.
+
+## Setup
+
+1. Install dependecies
 
 ```bash
 bun install
 ```
-
-To run in development mode:
-
-```bash
-bun dev
-```
-
-Lint files inside src/
-
-```bash
-bun lint
-```
-
-Initialize docker container with:
+2. Initialize docker container
 
 ```bash
 docker-compose up -d
+```
+3. Apply prisma migrations
+
+```bash
+bunx prisma migrate dev
 ```
