@@ -1,6 +1,6 @@
 # Study Review API
 
-### An api for a study review app made with Bun, ElysiaJS and PostgresSQL.
+Made with Bun, ElysiaJS and PostgresSQL.
 
 ## Setup
 
