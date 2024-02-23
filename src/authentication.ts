@@ -8,7 +8,7 @@ export const authentication = new Elysia().derive(({ cookie, set }) => {
 
 			if (!session_id.value) {
 				set.status = "Unauthorized";
-				set.redirect = "/";
+				return;
 			}
 
 			const session = await prisma.sessions.findUnique({
@@ -18,9 +18,10 @@ export const authentication = new Elysia().derive(({ cookie, set }) => {
 			if (session) {
 				return session.session_user;
 			}
+
 			session_id.remove();
-			set.status = "Bad Request";
-			set.redirect = "/";
+			set.status = "Unauthorized";
+			return;
 		},
 	};
 });

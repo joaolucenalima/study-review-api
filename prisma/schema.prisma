@@ -13,7 +13,7 @@ model User {
   email   String @unique
   picture String
 
-  tasks Tasks[]
+  tasks Task[]
 }
 
 model Sessions {
@@ -21,23 +21,23 @@ model Sessions {
   session_user String
 }
 
-model Tasks {
-  id                String  @id @default(cuid())
-  title             String
-  first_date        String
-  completed         Boolean @default(false)
-  next_revision_day String
-  user_id           String?
+model Task {
+  id          String   @id @default(cuid())
+  user_id     String?
+  title       String
+  description String
+  completed   Boolean  @default(false)
+  first_date  DateTime
 
-  User      User?       @relation(fields: [user_id], references: [id])
-  revisions Revisions[]
+  User      User?      @relation(fields: [user_id], references: [id])
+  revisions Revision[]
 }
 
-model Revisions {
-  id      String  @id @default(cuid())
-  day     String
-  revised Boolean
-  task_id String?
+model Revision {
+  id        String   @id @default(cuid())
+  task_id   String?
+  day       DateTime
+  completed Boolean  @default(false)
 
-  Task Tasks? @relation(fields: [task_id], references: [id])
+  Task Task? @relation(fields: [task_id], references: [id])
 }

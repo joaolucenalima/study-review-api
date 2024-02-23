@@ -1,4 +1,4 @@
-import { Prisma, type Tasks, type User } from "@prisma/client";
+import { Prisma, type Task, type User } from "@prisma/client";
 
 export interface UsersRepository {
 	findById(id: string): Promise<User | null>;
@@ -7,10 +7,16 @@ export interface UsersRepository {
 }
 
 export interface TasksRepository {
-	find(id: string): Promise<Tasks | null>;
-	findTodayTasksAndRevisions(user_id: string): Promise<Tasks[] | null>;
-	create(user_id: string, data: Prisma.TasksCreateInput): Promise<void>;
-	toggleComplete(id: string, completed: boolean): Promise<void>;
-	deferTasks(user_id: string): Promise<void>;
-	deferRevisions(user_id: string): Promise<void>;
+	create(user_id: string, data: Prisma.TaskCreateInput): Promise<Task>;
+	findById(id: string): Promise<Task | null>;
+	findTodayTasksAndRevisions(
+		user_id: string,
+		today: string,
+	): Promise<Task[] | null>;
+	toggleCompleteTask(id: string, completed: boolean): Promise<void>;
+	deferTasks(user_id: string, nextDay: Date): Promise<void>;
+}
+
+export interface RevisionsRepository {
+	create(task_id: string, date: string): Promise<void>;
 }

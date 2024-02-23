@@ -1,6 +1,9 @@
+import { addDays, formatISO } from "date-fns";
 import Elysia, { t } from "elysia";
 import { authentication } from "../authentication";
+import { PrismaRevisionsRepository } from "../repositories/prisma/prisma-revisions-repository";
 import { PrismaTasksRepository } from "../repositories/prisma/prisma-tasks-repository";
+import { RevisionServices } from "../services/revision.service";
 import { TasksServices } from "../services/task.service";
 
 export const TasksRoutes = new Elysia();
@@ -8,11 +11,8 @@ export const TasksRoutes = new Elysia();
 const taskRepository = new PrismaTasksRepository();
 const tasksServices = new TasksServices(taskRepository);
 
-TasksRoutes.use(authentication).get("/tasks", async ({ getLoggedUserId }) => {
-	const user_id = (await getLoggedUserId()) as string;
-
-	return await tasksServices.findTasks(user_id);
-});
+const revisionRepository = new PrismaRevisionsRepository();
+const revisionServices = new RevisionServices(revisionRepository);
 
 TasksRoutes.use(authentication).post(
 	"/tasks",
@@ -20,7 +20,10 @@ TasksRoutes.use(authentication).post(
 		const user_id = (await getLoggedUserId()) as string;
 
 		try {
-			await tasksServices.create(user_id, body);
+			const task = await tasksServices.create({ user_id, body });
+
+			const nextDay = formatISO(addDays(new Date(body.first_date), 1));
+			await revisionServices.create(task.id, nextDay);
 
 			set.status = 201;
 			return { message: "Task created successfully" };
@@ -32,13 +35,19 @@ TasksRoutes.use(authentication).post(
 	{
 		body: t.Object({
 			title: t.String(),
-			first_date: t.String(),
-			next_revision_day: t.String(),
+			description: t.String(),
+			first_date: t.String({ format: "date-time" }),
 		}),
 	},
 );
 
-TasksRoutes.use(authentication).put(
+TasksRoutes.use(authentication).get("/tasks", async ({ getLoggedUserId }) => {
+	const user_id = (await getLoggedUserId()) as string;
+
+	return await tasksServices.findTasks(user_id);
+});
+
+TasksRoutes.use(authentication).patch(
 	"/tasks/:id",
 	async ({ getLoggedUserId, params, set }) => {
 		await getLoggedUserId();
@@ -60,13 +69,13 @@ TasksRoutes.use(authentication).put(
 	},
 );
 
-TasksRoutes.use(authentication).put(
+TasksRoutes.use(authentication).patch(
 	"/tasks/defer",
-	async ({ getLoggedUserId, set }) => {
+	async ({ getLoggedUserId, set, body }) => {
 		const user_id = (await getLoggedUserId()) as string;
 
 		try {
-			await tasksServices.deferDay(user_id);
+			await tasksServices.deferDay(user_id, body.day);
 
 			set.status = "OK";
 			return { message: "Dia adiado" };
@@ -74,5 +83,10 @@ TasksRoutes.use(authentication).put(
 			set.status = 500;
 			return { error };
 		}
+	},
+	{
+		body: t.Object({
+			day: t.Date(),
+		}),
 	},
 );

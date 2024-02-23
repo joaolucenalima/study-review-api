@@ -1,11 +1,23 @@
 import type { Prisma } from "@prisma/client";
-import { format } from "date-fns";
 import { prisma } from "../../lib/prisma";
 import type { TasksRepository } from "../interfaces";
 
 export class PrismaTasksRepository implements TasksRepository {
-	async find(id: string) {
-		const task = await prisma.tasks.findUnique({
+	async create(user_id: string, data: Prisma.TaskCreateInput) {
+		return await prisma.task.create({
+			data: {
+				...data,
+				User: {
+					connect: {
+						id: user_id,
+					},
+				}
+			},
+		});
+	}
+
+	async findById(id: string) {
+		const task = await prisma.task.findUnique({
 			where: {
 				id,
 			},
@@ -14,17 +26,19 @@ export class PrismaTasksRepository implements TasksRepository {
 		return task;
 	}
 
-	async findTodayTasksAndRevisions(user_id: string) {
-		const tasks = await prisma.tasks.findMany({
+	async findTodayTasksAndRevisions(user_id: string, today: string) {
+		console.log(today);
+		const tasks = await prisma.task.findMany({
 			where: {
 				user_id,
 				OR: [
 					{
-						first_date: format(new Date(), "dd-MM-yyyy"),
+						first_date: {
+							lte: today,
+						},
 						completed: false,
 					},
 					{
-						next_revision_day: format(new Date(), "dd-MM-yyyy"),
 						completed: true,
 					},
 				],
@@ -34,21 +48,8 @@ export class PrismaTasksRepository implements TasksRepository {
 		return tasks;
 	}
 
-	async create(user_id: string, data: Prisma.TasksCreateInput) {
-		await prisma.tasks.create({
-			data: {
-				...data,
-				User: {
-					connect: {
-						id: user_id,
-					},
-				},
-			},
-		});
-	}
-
-	async toggleComplete(id: string, completed: boolean) {
-		await prisma.tasks.update({
+	async toggleCompleteTask(id: string, completed: boolean) {
+		await prisma.task.update({
 			where: {
 				id,
 			},
@@ -58,37 +59,14 @@ export class PrismaTasksRepository implements TasksRepository {
 		});
 	}
 
-	async deferTasks(user_id: string) {
-		const tomorrow = new Date();
-		tomorrow.setTime(tomorrow.getTime() + 1000 * 60 * 60 * 24);
-
-		await prisma.tasks.updateMany({
+	async deferTasks(user_id: string, nextDay: Date) {
+		await prisma.task.updateMany({
 			where: {
 				user_id,
-				first_date: format(new Date(), "dd-MM-yyyy"),
+				completed: false,
 			},
 			data: {
-				first_date: format(tomorrow, "dd-MM-yyyy"),
-				next_revision_day: format(
-					new Date(tomorrow.setTime(tomorrow.getTime() + 1000 * 60 * 60 * 24)),
-					"dd-MM-yyyy",
-				),
-			},
-		});
-	}
-
-	async deferRevisions(user_id: string) {
-		const tomorrow = new Date();
-		tomorrow.setTime(tomorrow.getTime() + 1000 * 60 * 60 * 24);
-
-		await prisma.tasks.updateMany({
-			where: {
-				user_id,
-				next_revision_day: format(new Date(), "dd-MM-yyyy"),
-				completed: true,
-			},
-			data: {
-				next_revision_day: format(tomorrow, "dd-MM-yyyy"),
+				first_date: nextDay,
 			},
 		});
 	}
