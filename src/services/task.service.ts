@@ -14,7 +14,7 @@ export class TasksServices {
 	constructor(private tasksRepository: TasksRepository) { }
 
 	async create({ user_id, body }: CreateTask) {
-		body.first_date = formatISO(body.first_date);
+		body.first_date = formatISO(body.first_date, { representation: "date" });
 		return await this.tasksRepository.create(user_id, body);
 	}
 

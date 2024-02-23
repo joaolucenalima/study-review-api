@@ -22,7 +22,7 @@ TasksRoutes.use(authentication).post(
 		try {
 			const task = await tasksServices.create({ user_id, body });
 
-			const nextDay = formatISO(addDays(new Date(body.first_date), 1));
+			const nextDay = formatISO(addDays(body.first_date, 1), { representation: "date" });
 			await revisionServices.create(task.id, nextDay);
 
 			set.status = 201;

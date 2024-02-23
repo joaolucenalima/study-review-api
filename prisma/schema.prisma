@@ -27,7 +27,7 @@ model Task {
   title       String
   description String
   completed   Boolean  @default(false)
-  first_date  DateTime
+  first_date  DateTime @db.Date
 
   User      User?      @relation(fields: [user_id], references: [id])
   revisions Revision[]
@@ -36,7 +36,7 @@ model Task {
 model Revision {
   id        String   @id @default(cuid())
   task_id   String?
-  day       DateTime
+  day       DateTime @db.Date
   completed Boolean  @default(false)
 
   Task Task? @relation(fields: [task_id], references: [id])
