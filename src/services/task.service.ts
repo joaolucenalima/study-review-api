@@ -7,7 +7,7 @@ interface CreateTask {
 		title: string;
 		description: string;
 		first_date: string;
-	}
+	};
 }
 
 export class TasksServices {
@@ -18,13 +18,11 @@ export class TasksServices {
 		return await this.tasksRepository.create(user_id, body);
 	}
 
-	async findTasks(user_id: string) {
-		const tasks = await this.tasksRepository.findTodayTasksAndRevisions(
+	async findTasksAndRevisions(user_id: string) {
+		return await this.tasksRepository.findTodayTasks(
 			user_id,
-			formatISO(new Date().toLocaleDateString()),
+			formatISO(new Date()),
 		);
-
-		return tasks;
 	}
 
 	async toggleCompleted(id: string) {

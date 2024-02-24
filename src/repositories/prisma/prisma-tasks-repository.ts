@@ -11,7 +11,7 @@ export class PrismaTasksRepository implements TasksRepository {
 					connect: {
 						id: user_id,
 					},
-				}
+				},
 			},
 		});
 	}
@@ -26,22 +26,14 @@ export class PrismaTasksRepository implements TasksRepository {
 		return task;
 	}
 
-	async findTodayTasksAndRevisions(user_id: string, today: string) {
-		console.log(today);
+	async findTodayTasks(user_id: string, today: string) {
 		const tasks = await prisma.task.findMany({
 			where: {
 				user_id,
-				OR: [
-					{
-						first_date: {
-							lte: today,
-						},
-						completed: false,
-					},
-					{
-						completed: true,
-					},
-				],
+				first_date: {
+					lte: today,
+				},
+				completed: false,
 			},
 		});
 

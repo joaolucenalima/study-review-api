@@ -9,14 +9,20 @@ export interface UsersRepository {
 export interface TasksRepository {
 	create(user_id: string, data: Prisma.TaskCreateInput): Promise<Task>;
 	findById(id: string): Promise<Task | null>;
-	findTodayTasksAndRevisions(
-		user_id: string,
-		today: string,
-	): Promise<Task[] | null>;
+	findTodayTasks(user_id: string, today: string): Promise<Task[] | null>;
 	toggleCompleteTask(id: string, completed: boolean): Promise<void>;
 	deferTasks(user_id: string, nextDay: Date): Promise<void>;
 }
 
 export interface RevisionsRepository {
 	create(task_id: string, date: string): Promise<void>;
+	findTodayRevisions(
+		user_id: string,
+		today: string,
+	): Promise<
+		{
+			completed: boolean;
+			Task: { title: string; description: string; first_date: Date } | null;
+		}[]
+	>;
 }

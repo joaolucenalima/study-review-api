@@ -11,8 +11,8 @@ export const TasksRoutes = new Elysia();
 const taskRepository = new PrismaTasksRepository();
 const tasksServices = new TasksServices(taskRepository);
 
-const revisionRepository = new PrismaRevisionsRepository();
-const revisionServices = new RevisionServices(revisionRepository);
+const revisionsRepository = new PrismaRevisionsRepository();
+const revisionServices = new RevisionServices(revisionsRepository);
 
 TasksRoutes.use(authentication).post(
 	"/tasks",
@@ -22,7 +22,9 @@ TasksRoutes.use(authentication).post(
 		try {
 			const task = await tasksServices.create({ user_id, body });
 
-			const nextDay = formatISO(addDays(body.first_date, 1), { representation: "date" });
+			const nextDay = formatISO(addDays(body.first_date, 1), {
+				representation: "date",
+			});
 			await revisionServices.create(task.id, nextDay);
 
 			set.status = 201;
@@ -44,7 +46,13 @@ TasksRoutes.use(authentication).post(
 TasksRoutes.use(authentication).get("/tasks", async ({ getLoggedUserId }) => {
 	const user_id = (await getLoggedUserId()) as string;
 
-	return await tasksServices.findTasks(user_id);
+	const tasks = await tasksServices.findTasksAndRevisions(user_id);
+	const revisions = await revisionServices.findTodayRevisions(
+		user_id,
+		formatISO(new Date()),
+	);
+
+	return { tasks, revisions };
 });
 
 TasksRoutes.use(authentication).patch(
