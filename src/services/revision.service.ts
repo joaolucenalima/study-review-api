@@ -1,14 +1,14 @@
 import type { RevisionsRepository } from "../repositories/interfaces";
 
 export class RevisionServices {
-	constructor(private revisionRepository: RevisionsRepository) { }
+	constructor(private revisionRepository: RevisionsRepository) {}
 
 	async create(task_id: string, date: string) {
 		await this.revisionRepository.create(task_id, date);
 	}
 
 	async findTodayRevisions(user_id: string, today: string) {
-		return await this.revisionRepository.findTodayRevisions(user_id, today);
+		return await this.revisionRepository.findByDay(user_id, today);
 	}
 
 	async complete(task_id: string, user_id: string) {
@@ -19,5 +19,9 @@ export class RevisionServices {
 		}
 
 		await this.revisionRepository.complete(task_id, user_id);
+	}
+
+	async deferToday(user_id: string, nextValidDay: string) {
+		await this.revisionRepository.updateDay(user_id, nextValidDay);
 	}
 }

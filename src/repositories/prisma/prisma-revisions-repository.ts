@@ -1,3 +1,4 @@
+import { formatISO } from "date-fns";
 import { prisma } from "../../lib/prisma";
 import type { RevisionsRepository } from "../interfaces";
 
@@ -25,7 +26,7 @@ export class PrismaRevisionsRepository implements RevisionsRepository {
 		return revision;
 	}
 
-	async findTodayRevisions(user_id: string, today: string) {
+	async findByDay(user_id: string, today: string) {
 		const revisions = await prisma.revision.findMany({
 			where: {
 				Task: {
@@ -54,12 +55,26 @@ export class PrismaRevisionsRepository implements RevisionsRepository {
 			where: {
 				id: task_id,
 				Task: {
-					user_id
-				}
+					user_id,
+				},
 			},
 			data: {
 				completed: true,
 			},
-		})
+		});
+	}
+
+	async updateDay(user_id: string, nextValidDay: string) {
+		await prisma.revision.updateMany({
+			where: {
+				Task: {
+					user_id,
+				},
+				day: formatISO(new Date().toLocaleDateString()),
+			},
+			data: {
+				day: nextValidDay,
+			},
+		});
 	}
 }

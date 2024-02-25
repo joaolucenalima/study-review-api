@@ -1,4 +1,4 @@
-import { addDays, formatISO } from "date-fns";
+import { addDays, formatISO, startOfToday } from "date-fns";
 import Elysia, { t } from "elysia";
 import { authentication } from "../authentication";
 import { PrismaRevisionsRepository } from "../repositories/prisma/prisma-revisions-repository";
@@ -61,7 +61,7 @@ TasksRoutes.use(authentication).patch(
 		await getLoggedUserId();
 
 		try {
-			await tasksServices.toggleCompleted(params.id);
+			await tasksServices.toggleComplete(params.id);
 
 			set.status = 200;
 			return { message: "Estudo completo!" };
@@ -96,11 +96,13 @@ TasksRoutes.use(authentication).patch(
 
 TasksRoutes.use(authentication).patch(
 	"/tasks/defer",
-	async ({ getLoggedUserId, set, body }) => {
+	async ({ getLoggedUserId, set }) => {
 		const user_id = (await getLoggedUserId()) as string;
 
+		const nextDay = formatISO(addDays(startOfToday(), 1));
 		try {
-			await tasksServices.deferDay(user_id, body.day);
+			await tasksServices.deferToday(user_id, nextDay);
+			await revisionServices.deferToday(user_id, nextDay);
 
 			set.status = "OK";
 			return { message: "Dia adiado" };
@@ -108,10 +110,5 @@ TasksRoutes.use(authentication).patch(
 			set.status = 500;
 			return { error };
 		}
-	},
-	{
-		body: t.Object({
-			day: t.Date(),
-		}),
 	},
 );

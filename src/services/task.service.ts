@@ -1,4 +1,4 @@
-import { addDays, formatISO } from "date-fns";
+import { formatISO } from "date-fns";
 import type { TasksRepository } from "../repositories/interfaces";
 
 interface CreateTask {
@@ -19,13 +19,13 @@ export class TasksServices {
 	}
 
 	async findTasksAndRevisions(user_id: string) {
-		return await this.tasksRepository.findTodayTasks(
+		return await this.tasksRepository.findByDate(
 			user_id,
 			formatISO(new Date()),
 		);
 	}
 
-	async toggleCompleted(id: string) {
+	async toggleComplete(id: string) {
 		const task = await this.tasksRepository.findById(id);
 
 		if (!task) {
@@ -33,11 +33,11 @@ export class TasksServices {
 		}
 
 		if (task.completed) {
-			await this.tasksRepository.toggleCompleteTask(task.id, task.completed);
+			await this.tasksRepository.updateCompleted(task.id, task.completed);
 		}
 	}
 
-	async deferDay(user_id: string, dayToDefer: Date) {
-		await this.tasksRepository.deferTasks(user_id, addDays(dayToDefer, 1));
+	async deferToday(user_id: string, nextValidDay: string) {
+		await this.tasksRepository.updateDay(user_id, nextValidDay);
 	}
 }

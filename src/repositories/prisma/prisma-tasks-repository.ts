@@ -26,7 +26,7 @@ export class PrismaTasksRepository implements TasksRepository {
 		return task;
 	}
 
-	async findTodayTasks(user_id: string, today: string) {
+	async findByDate(user_id: string, today: string) {
 		const tasks = await prisma.task.findMany({
 			where: {
 				user_id,
@@ -40,7 +40,7 @@ export class PrismaTasksRepository implements TasksRepository {
 		return tasks;
 	}
 
-	async toggleCompleteTask(id: string, completed: boolean) {
+	async updateCompleted(id: string, completed: boolean) {
 		await prisma.task.update({
 			where: {
 				id,
@@ -51,14 +51,14 @@ export class PrismaTasksRepository implements TasksRepository {
 		});
 	}
 
-	async deferTasks(user_id: string, nextDay: Date) {
+	async updateDay(user_id: string, nextValidDay: string) {
 		await prisma.task.updateMany({
 			where: {
 				user_id,
 				completed: false,
 			},
 			data: {
-				first_date: nextDay,
+				first_date: nextValidDay,
 			},
 		});
 	}
