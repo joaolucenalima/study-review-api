@@ -15,6 +15,16 @@ export class PrismaRevisionsRepository implements RevisionsRepository {
 		});
 	}
 
+	async findById(id: string) {
+		const revision = await prisma.revision.findUnique({
+			where: {
+				id,
+			},
+		});
+
+		return revision;
+	}
+
 	async findTodayRevisions(user_id: string, today: string) {
 		const revisions = await prisma.revision.findMany({
 			where: {
@@ -37,5 +47,19 @@ export class PrismaRevisionsRepository implements RevisionsRepository {
 		});
 
 		return revisions;
+	}
+
+	async complete(task_id: string, user_id: string) {
+		await prisma.revision.update({
+			where: {
+				id: task_id,
+				Task: {
+					user_id
+				}
+			},
+			data: {
+				completed: true,
+			},
+		})
 	}
 }

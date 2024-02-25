@@ -15,7 +15,7 @@ const revisionsRepository = new PrismaRevisionsRepository();
 const revisionServices = new RevisionServices(revisionsRepository);
 
 TasksRoutes.use(authentication).post(
-	"/tasks",
+	"/task",
 	async ({ getLoggedUserId, body, set }) => {
 		const user_id = (await getLoggedUserId()) as string;
 
@@ -49,14 +49,14 @@ TasksRoutes.use(authentication).get("/tasks", async ({ getLoggedUserId }) => {
 	const tasks = await tasksServices.findTasksAndRevisions(user_id);
 	const revisions = await revisionServices.findTodayRevisions(
 		user_id,
-		formatISO(new Date()),
+		formatISO(new Date().toLocaleDateString()),
 	);
 
 	return { tasks, revisions };
 });
 
 TasksRoutes.use(authentication).patch(
-	"/tasks/:id",
+	"/task/:id",
 	async ({ getLoggedUserId, params, set }) => {
 		await getLoggedUserId();
 
@@ -74,6 +74,23 @@ TasksRoutes.use(authentication).patch(
 		params: t.Object({
 			id: t.String(),
 		}),
+	},
+);
+
+TasksRoutes.use(authentication).patch(
+	"/revision/:id",
+	async ({ getLoggedUserId, params, set }) => {
+		const user_id = (await getLoggedUserId()) as string;
+
+		try {
+			await revisionServices.complete(params.id, user_id);
+
+			set.status = 200;
+			return { message: "Revisão completa!" };
+		} catch (error) {
+			set.status = 500;
+			return { error };
+		}
 	},
 );
 

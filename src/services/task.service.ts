@@ -11,7 +11,7 @@ interface CreateTask {
 }
 
 export class TasksServices {
-	constructor(private tasksRepository: TasksRepository) { }
+	constructor(private tasksRepository: TasksRepository) {}
 
 	async create({ user_id, body }: CreateTask) {
 		body.first_date = formatISO(body.first_date, { representation: "date" });
