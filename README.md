@@ -9,11 +9,13 @@ Made with Bun, ElysiaJS and PostgresSQL.
 ```bash
 bun install
 ```
+
 2. Initialize docker container
 
 ```bash
 docker compose up -d
 ```
+
 3. Apply prisma migrations
 
 ```bash
